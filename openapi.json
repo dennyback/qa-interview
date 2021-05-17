@@ -1,0 +1,223 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "QA Interview test example gateway",
+      "url": "http://localhost"
+    }
+  ],
+  "info": {
+    "version": "0.0.1",
+    "title": "QA Interview Gateway"
+  },
+  "paths": {
+    "/payments": {
+      "post": {
+        "operationId": "ProcessPayment",
+        "description": "Get transaction by given ID",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ProcessPaymentOK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/{payment_id}": {
+      "get": {
+        "operationId": "GetPaymentByID",
+        "description": "Синхронно получить платеж по его ID",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetPaymentByIDOK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PaymentID"
+          }
+        ],
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/{payment_id}/fiscals": {
+      "get": {
+        "operationId": "GetPaymentFiscals",
+        "description": "Синхронно получить коллекцию чеков по платежу",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetPaymentFiscalsByPaymentIDOK"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PaymentID"
+          }
+        ],
+        "tags": [
+          "Payments"
+        ]
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "PaymentID": {
+        "name": "payment_id",
+        "description": "ID платежа",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "responses": {
+      "ProcessPaymentOK": {
+        "description": "Асинхронное создание новой оплаты",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProcessPaymentResponse"
+            }
+          }
+        }
+      },
+      "GetPaymentByIDOK": {
+        "description": "Получение платежа по ID",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GetPaymentByIDResponse"
+            }
+          }
+        }
+      },
+      "GetPaymentFiscalsByPaymentIDOK": {
+        "description": "Получение коллекции чеков по ID платежа",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GetPaymentFiscalsByPaymentIDResponse"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "error": {
+                "code": 404,
+                "message": "resource not found"
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ProcessPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "GetPaymentByIDResponse": {
+        "type": "object",
+        "properties": {
+          "payment": {
+            "$ref": "#/components/schemas/Payment"
+          }
+        }
+      },
+      "GetPaymentFiscalsByPaymentIDResponse": {
+        "type": "object",
+        "properties": {
+          "payment_fiscals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentFiscal"
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/Error"
+          }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "processed",
+              "success",
+              "failed",
+              "error"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "PaymentFiscal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

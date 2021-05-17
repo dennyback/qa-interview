@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package contract;
+
+option go_package = ".;contract";
+
+service Users {
+    rpc GetPaymentFiscals (GetPaymentFiscalsRequest) returns (GetPaymentFiscalsResponse) {
+    }
+}
+
+message GetPaymentFiscalsRequest {
+    string payment_id = 1;
+}
+
+message GetPaymentFiscalsResponse {
+    message PaymentFiscal {
+        string id = 1;
+        float amount = 2;
+    }
+    repeated PaymentFiscal payment_fiscals = 1;
+}

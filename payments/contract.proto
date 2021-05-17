@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package contract;
+
+option go_package = ".;contract";
+
+service Users {
+    rpc ProcessPayment (ProcessPaymentRequest) returns (ProcessPaymentResponse) {
+    }
+    rpc GetPayment (GetPaymentRequest) returns (GetPaymentResponse) {
+    }
+}
+
+message ProcessPaymentRequest {
+    float amount = 1;
+}
+
+message ProcessPaymentResponse {
+    string payment_id = 1;
+}
+
+message GetPaymentRequest {
+    string payment_id = 1;
+}
+
+message GetPaymentResponse {
+    message Payment {
+        string id = 1;
+        string status = 2;
+        float amount = 3;
+    }
+    Payment payment = 1;
+}
